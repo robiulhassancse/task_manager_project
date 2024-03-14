@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/screens/pin_verification_screen.dart';
-import 'package:task_manager/screens/sign_in_screen.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_manager/screens/auth/set_password_screen.dart';
 import 'package:task_manager/widgets/background_body.dart';
 
-class SetPasswordScreen extends StatefulWidget {
-  const SetPasswordScreen({super.key});
+class PinVerificationScreen extends StatefulWidget {
+  const PinVerificationScreen({super.key});
 
   @override
-  State<SetPasswordScreen> createState() => _SetPasswordScreenState();
+  State<PinVerificationScreen> createState() => _PinVerificationScreenState();
 }
 
-class _SetPasswordScreenState extends State<SetPasswordScreen> {
+class _PinVerificationScreenState extends State<PinVerificationScreen> {
   final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -28,42 +29,50 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                   const SizedBox(
                     height: 100,
                   ),
-                   Text(
-                    'Set Password',
-                    style: Theme.of(context).textTheme.titleLarge,
+                  const Text(
+                    'PIN Verification',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  Text('Minimum length password 8 character with Latter and number combination',style: TextStyle(
+                  Text('A 6 digit verification pin will send to your email address',style: TextStyle(
                     color: Colors.grey.shade600,
                   ),),
                   const SizedBox(
                     height: 16,
                   ),
-                  TextFormField(
-                    controller: _emailTEController,
-                    decoration: const InputDecoration(
-                      hintText: 'Password',
+                  PinCodeTextField(
+                    keyboardType: TextInputType.number,
+                    length: 6,
+                    obscureText: false,
+                    animationType: AnimationType.fade,
+                    pinTheme: PinTheme(
+                      shape: PinCodeFieldShape.box,
+                      borderRadius: BorderRadius.circular(5),
+                      fieldHeight: 50,
+                      fieldWidth: 40,
+                      activeFillColor: Colors.white,
+                      activeColor: Colors.white,
+                      inactiveColor: Colors.green,
+                      inactiveFillColor: Colors.white,
+                      selectedFillColor: Colors.white,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    controller: _emailTEController,
-                    decoration: const InputDecoration(
-                      hintText: 'Confirm Password',
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
+                    animationDuration: const Duration(milliseconds: 300),
+                    backgroundColor: Colors.transparent,
+                    enableActiveFill: true,
+                    onChanged: (value) {},
+                    appContext: context,
                   ),
 
                   SizedBox(
-                    height: 45,
+                    height: 40,
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const SetPasswordScreen(),),);
                       },
-                      child: const Text('Confirm'),
+                      child: const Text('Verify'),
                     ),
                   ),
                   const SizedBox(
@@ -81,8 +90,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                         child: const Text(
                           "Sign in",
                         ),
@@ -96,10 +104,5 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
         ),
       ),
     );
-  }
-  @override
-  void dispose() {
-    _emailTEController.dispose();
-    super.dispose();
   }
 }

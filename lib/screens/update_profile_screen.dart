@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/screens/pin_verification_screen.dart';
-import 'package:task_manager/screens/email_verification_screen.dart';
+import 'package:task_manager/screens/auth/pin_verification_screen.dart';
+import 'package:task_manager/screens/auth/email_verification_screen.dart';
 import 'package:task_manager/widgets/background_body.dart';
 import 'package:task_manager/widgets/profileAppBar.dart';
 
