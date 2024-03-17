@@ -15,7 +15,7 @@ class _MainBottomNavScrenState extends State<MainBottomNavScren> {
 
    int _currentSelectIndex=0;
    final List<Widget> _screen=[
-     const NewTaskScreen(),
+      const NewTaskScreen(),
      const ProgressTaskScreen(),
      const CompleteTaskScreen(),
      const CancleTaskScreen(),

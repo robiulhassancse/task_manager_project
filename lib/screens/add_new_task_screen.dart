@@ -14,6 +14,7 @@ import 'package:task_manager/widgets/snack_bar_message.dart';
 class AddNewTaskScreen extends StatefulWidget {
   const AddNewTaskScreen({super.key});
 
+
   @override
   State<AddNewTaskScreen> createState() => _AddNewTaskScreenState();
 }
@@ -23,6 +24,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   final TextEditingController _descriptionTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _addNewTaskInProgress = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -134,6 +136,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     }
 
   }
+
 
   @override
   void dispose() {
