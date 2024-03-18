@@ -40,7 +40,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
-                    height: 100,
+                    height: 30,
                   ),
                   Text(
                     'Add New Task',
