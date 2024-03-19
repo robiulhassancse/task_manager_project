@@ -7,6 +7,7 @@ import 'package:task_manager/data/utlity/urls.dart';
 import 'package:task_manager/screens/add_new_task_screen.dart';
 import 'package:task_manager/widgets/snack_bar_message.dart';
 
+import '../widgets/empty_list_widget.dart';
 import '../widgets/profileAppBar.dart';
 import '../widgets/task_counter_card.dart';
 
@@ -63,84 +64,88 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                   replacement: const Center(
                     child: CircularProgressIndicator(),
                   ),
-                  child: ListView.builder(
-                      itemCount: _newTaskListWrapper.taskList?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.white,
-                          child: ListTile(
-                            title: Text(
-                                _newTaskListWrapper.taskList![index].title ??
-                                    ''),
-                            subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _newTaskListWrapper
-                                            .taskList![index].description ??
-                                        '',
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.grey,
+                  child: Visibility(
+                    visible: _newTaskListWrapper.taskList?.isNotEmpty ?? false,
+                    replacement: const EmptyListWidget(),
+                    child: ListView.builder(
+                        itemCount: _newTaskListWrapper.taskList?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.white,
+                            child: ListTile(
+                              title: Text(
+                                  _newTaskListWrapper.taskList![index].title ??
+                                      ''),
+                              subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _newTaskListWrapper
+                                              .taskList![index].description ??
+                                          '',
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                      'Date: ${_newTaskListWrapper.taskList?[index].createdDate}'),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Chip(
-                                        label: Text(
-                                          _newTaskListWrapper
-                                                  .taskList![index].status ??
-                                              '',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                        'Date: ${_newTaskListWrapper.taskList?[index].createdDate}'),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Chip(
+                                          label: Text(
+                                            _newTaskListWrapper
+                                                    .taskList![index].status ??
+                                                '',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.blue,
+                                        ),
+                                        const Spacer(),
+                                        Visibility(
+                                          visible:
+                                              _updatesTaskInProgress == false,
+                                          replacement:
+                                              const CircularProgressIndicator(),
+                                          child: IconButton(
+                                            onPressed: () {
+                                              _showUpdatesStateDialog(
+                                                  _newTaskListWrapper
+                                                      .taskList![index].sId!);
+                                            },
+                                            icon: const Icon(Icons.edit),
                                           ),
                                         ),
-                                        backgroundColor: Colors.blue,
-                                      ),
-                                      const Spacer(),
-                                      Visibility(
-                                        visible:
-                                            _updatesTaskInProgress == false,
-                                        replacement:
-                                            const CircularProgressIndicator(),
-                                        child: IconButton(
-                                          onPressed: () {
-                                            _showUpdatesStateDialog(
-                                                _newTaskListWrapper
-                                                    .taskList![index].sId!);
-                                          },
-                                          icon: const Icon(Icons.edit),
+                                        Visibility(
+                                          visible: _deleteTaskInProgress == false,
+                                          replacement:
+                                              const CircularProgressIndicator(),
+                                          child: IconButton(
+                                            onPressed: () {
+                                              _deleteTaskById(_newTaskListWrapper
+                                                  .taskList![index].sId!);
+                                            },
+                                            icon: const Icon(
+                                                Icons.delete_forever_outlined,
+                                                color: Colors.red),
+                                          ),
                                         ),
-                                      ),
-                                      Visibility(
-                                        visible: _deleteTaskInProgress == false,
-                                        replacement:
-                                            const CircularProgressIndicator(),
-                                        child: IconButton(
-                                          onPressed: () {
-                                            _deleteTaskById(_newTaskListWrapper
-                                                .taskList![index].sId!);
-                                          },
-                                          icon: const Icon(
-                                              Icons.delete_forever_outlined,
-                                              color: Colors.red),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ]),
-                          ),
-                        );
-                      }),
+                                      ],
+                                    ),
+                                  ]),
+                            ),
+                          );
+                        }),
+                  ),
                 ),
               ),
             ],
@@ -193,7 +198,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Select staus'),
+            title: const Text('Select status'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -246,10 +251,17 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
           );
         });
   }
-
   bool _isCurrentStatus(String status) {
-    return _newTaskListWrapper.status == status;
+    for (final task in _newTaskListWrapper.taskList!) {
+      if (task.status == status) {
+        return true;
+      }
+    }
+    return false;
   }
+  // bool _isCurrentStatus(String status) {
+  //   return _newTaskListWrapper.status == status;
+  // }
 
   Future<void> _getAllTaskCountByStatus() async {
     _getAllTaskCountByStatusInProgress = true;
@@ -332,3 +344,5 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     }
   }
 }
+
+

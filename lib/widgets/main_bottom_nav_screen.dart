@@ -40,13 +40,13 @@ class _MainBottomNavScrenState extends State<MainBottomNavScren> {
             icon: Icon(Icons.file_copy),label: 'New Task'
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.file_copy),label: 'Progress'
+              icon: Icon(Icons.pending),label: 'Progress'
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.file_copy),label: 'Complete'
+              icon: Icon(Icons.done_all),label: 'Complete'
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.file_copy),label: 'Cancle'
+              icon: Icon(Icons.cancel),label: 'Cancle'
           ),
         ],
       ),
