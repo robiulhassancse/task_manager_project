@@ -153,13 +153,16 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddNewTaskScreen(),
-            ),
+              builder: (context) => const AddNewTaskScreen()),
           );
+
+          if(result != null && result == true){
+            _getDataFromApis();
+          }
         },
         child: const Icon(
           Icons.add,

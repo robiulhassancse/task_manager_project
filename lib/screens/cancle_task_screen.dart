@@ -27,6 +27,7 @@ class _CancleTaskScreenState extends State<CancleTaskScreen> {
 
   void _getDataFromApis() {
     _getAllCancleTaskList();
+    _getAllNewTaskList();
   }
 
   @override
@@ -45,6 +46,7 @@ class _CancleTaskScreenState extends State<CancleTaskScreen> {
                 ),
                 child: ListView.builder(
                     itemCount: _cancleTaskListWrapper.taskList?.length ?? 0,
+                  // itemCount: 10,
                     itemBuilder: (context, index) {
                       return Card(
                         color: Colors.white,
@@ -227,7 +229,7 @@ class _CancleTaskScreenState extends State<CancleTaskScreen> {
     _getAllCancleTaskListInProgress = true;
     setState(() {});
 
-    final response = await NetworkCaller.getRequest(Urls.newTaskList);
+    final response = await NetworkCaller.getRequest(Urls.closeTaskList);
     if (response.isSuccess) {
       _cancleTaskListWrapper = TaskListWrapper.fromJson(response.responseBody);
       _getAllCancleTaskListInProgress = false;

@@ -24,84 +24,94 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   final TextEditingController _descriptionTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _addNewTaskInProgress = false;
+  bool _shouldRefreshNewTaskList = false;
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: profileAppBar,
-      body: BackgroundScreen(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    'Add New Task',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    controller: _subjectTEController,
-                    decoration: const InputDecoration(
-                      hintText: 'subject',
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop){
+        if(didPop) {
+          return;
+        }
+          Navigator.pop(context, _shouldRefreshNewTaskList);
+      },
+      child: Scaffold(
+        appBar: profileAppBar,
+        body: BackgroundScreen(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 30,
                     ),
-                    validator: (String? value){
-                      if(value?.trim().isEmpty ?? true){
-                        return 'Enter your subject';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    controller: _descriptionTEController,
-                    maxLines: 8,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(top: 20,left: 24),
-                      hintText: 'Description',
+                    Text(
+                      'Add New Task',
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    validator: (String? value){
-                      if(value?.trim().isEmpty ?? true){
-                        return 'Enter your description';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  SizedBox(
-                    height: 45,
-                    width: double.infinity,
-                    child: Visibility(
-                      visible: _addNewTaskInProgress == false,
-                      replacement: const Center(child: CircularProgressIndicator(),),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if(_formKey.currentState!.validate()){
-                            _addNewTask();
-                          }
-                          // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const MainBottomNavScren(),), (route) => false);
-                        },
-                        child: const Icon(Icons.arrow_forward_ios),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      controller: _subjectTEController,
+                      decoration: const InputDecoration(
+                        hintText: 'subject',
+                      ),
+                      validator: (String? value){
+                        if(value?.trim().isEmpty ?? true){
+                          return 'Enter your subject';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      controller: _descriptionTEController,
+                      maxLines: 8,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.only(top: 20,left: 24),
+                        hintText: 'Description',
+                      ),
+                      validator: (String? value){
+                        if(value?.trim().isEmpty ?? true){
+                          return 'Enter your description';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    SizedBox(
+                      height: 45,
+                      width: double.infinity,
+                      child: Visibility(
+                        visible: _addNewTaskInProgress == false,
+                        replacement: const Center(child: CircularProgressIndicator(),),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if(_formKey.currentState!.validate()){
+                              _addNewTask();
+                            }
+                            // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const MainBottomNavScren(),), (route) => false);
+                          },
+                          child: const Icon(Icons.arrow_forward_ios),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                ],
+                    const SizedBox(
+                      height: 50,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -123,6 +133,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     _addNewTaskInProgress = false;
     setState(() {});
     if(response.isSuccess){
+      _shouldRefreshNewTaskList = true;
       _subjectTEController.clear();
       _descriptionTEController.clear();
       if(mounted) {
