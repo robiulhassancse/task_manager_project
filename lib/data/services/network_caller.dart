@@ -111,4 +111,9 @@ class NetworkCaller {
         MaterialPageRoute(builder: (context) => const SignInScreen()),
         (route) => false);
   }
+  // Future<bool> VerificationRequest(Email) async{
+  //   var Url = Uri.parse('${BaseURL}/RecoverVerifyEmail/${Email}');
+  // }
+
+
 }

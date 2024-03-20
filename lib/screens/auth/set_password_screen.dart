@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/utlity/urls.dart';
 import 'package:task_manager/screens/auth/pin_verification_screen.dart';
 import 'package:task_manager/screens/auth/sign_in_screen.dart';
 import 'package:task_manager/widgets/background_body.dart';
+import 'package:task_manager/widgets/snack_bar_message.dart';
 
 class SetPasswordScreen extends StatefulWidget {
-  const SetPasswordScreen({super.key});
+  const SetPasswordScreen({super.key, required this.email, required this.otp});
+  final String email, otp;
 
   @override
   State<SetPasswordScreen> createState() => _SetPasswordScreenState();
 }
 
 class _SetPasswordScreenState extends State<SetPasswordScreen> {
-  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+  final TextEditingController _confirmTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool _setPasswordInProgress = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,19 +47,33 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                     height: 16,
                   ),
                   TextFormField(
-                    controller: _emailTEController,
+                    controller: _passwordTEController,
                     decoration: const InputDecoration(
                       hintText: 'Password',
                     ),
+                    validator: (String? value){
+                      if(value?.isEmpty ?? true){
+                        return 'Enter your password';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(
                     height: 16,
                   ),
                   TextFormField(
-                    controller: _emailTEController,
+                    controller: _confirmTEController,
                     decoration: const InputDecoration(
                       hintText: 'Confirm Password',
                     ),
+                    validator: (String? value){
+                      if(value?.isEmpty ?? true){
+                        return 'Enter your confirm password';
+                      }else if(value! != _passwordTEController.text){
+                        return 'Confirm password doesn\'t match';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(
                     height: 16,
@@ -62,6 +84,10 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        if(!_formKey.currentState!.validate()){
+                          return;
+                        }
+                        resetPassword();
                       },
                       child: const Text('Confirm'),
                     ),
@@ -97,9 +123,39 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
       ),
     );
   }
+  Future<void> resetPassword() async{
+    _setPasswordInProgress = true;
+    if(mounted){
+      setState(() {});
+    }
+    Map<String,dynamic> inputParams={
+      "email":widget.email,
+      "OTP":widget.otp,
+      "password":_passwordTEController.text,
+    };
+
+    final response = await NetworkCaller.postRequest(Urls.resetPassword, inputParams);
+    _setPasswordInProgress = false;
+    if(mounted){
+      setState(() {});
+    }
+    if(response.isSuccess){
+      if(mounted) {
+        Navigator.pushAndRemoveUntil(
+            context, MaterialPageRoute(builder: (context) => const SignInScreen()), (
+            route) => false);
+      }
+    }else{
+      if(mounted) {
+        showSnackBarMessage(
+            context, response.errorMessage ?? 'Reset verification failed');
+      }
+    }
+  }
   @override
   void dispose() {
-    _emailTEController.dispose();
+    _passwordTEController.dispose();
+    _confirmTEController.dispose();
     super.dispose();
   }
 }

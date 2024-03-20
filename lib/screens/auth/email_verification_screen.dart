@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/utlity/urls.dart';
 import 'package:task_manager/screens/auth/pin_verification_screen.dart';
 import 'package:task_manager/screens/auth/sign_in_screen.dart';
 import 'package:task_manager/widgets/background_body.dart';
+import 'package:task_manager/widgets/snack_bar_message.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({super.key});
@@ -13,6 +16,8 @@ class EmailVerification extends StatefulWidget {
 class _EmailVerificationState extends State<EmailVerification> {
   final TextEditingController _emailTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _emailVerificationInProcess = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,13 +33,16 @@ class _EmailVerificationState extends State<EmailVerification> {
                   const SizedBox(
                     height: 100,
                   ),
-                   Text(
+                  Text(
                     'Your Email Address',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  Text('A 6 digit verification pin will send to your email address',style: TextStyle(
-                    color: Colors.grey.shade600,
-                  ),),
+                  Text(
+                    'A 6 digit verification pin will send to your email address',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
                   const SizedBox(
                     height: 16,
                   ),
@@ -47,15 +55,20 @@ class _EmailVerificationState extends State<EmailVerification> {
                   const SizedBox(
                     height: 16,
                   ),
-
                   SizedBox(
                     height: 45,
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> PinVerificationScreen(),),);
-                      },
-                      child: const Icon(Icons.arrow_forward_ios),
+                    child: Visibility(
+                      visible: _emailVerificationInProcess == false,
+                      replacement: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          sendOTPTOEmail();
+                        },
+                        child: const Icon(Icons.arrow_forward_ios),
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -74,7 +87,12 @@ class _EmailVerificationState extends State<EmailVerification> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> SignInScreen(),), (route) => false);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SignInScreen(),
+                              ),
+                              (route) => false);
                         },
                         child: const Text(
                           "Sign in",
@@ -90,6 +108,35 @@ class _EmailVerificationState extends State<EmailVerification> {
       ),
     );
   }
+
+  Future<void> sendOTPTOEmail() async {
+    _emailVerificationInProcess = true;
+    if (mounted) {
+      setState(() {});
+    }
+    final response = await NetworkCaller.getRequest(
+        Urls.emailVerificationRequest(_emailTEController.text.trim()));
+    _emailVerificationInProcess = false;
+    if (mounted) {
+      setState(() {});
+    }
+    if (response.isSuccess) {
+      if (mounted) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PinVerificationScreen(
+                    email: _emailTEController.text.trim())));
+      }
+    } else {
+      if (mounted) {
+        showSnackBarMessage(
+            context, response.errorMessage ?? 'Email verification  failed');
+      }
+    }
+  }
+
+
   @override
   void dispose() {
     _emailTEController.dispose();
